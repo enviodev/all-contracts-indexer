@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: Contracts
+description: Finds all registered contracts
+contracts:
+  - name: Greeter
+    abi_file_path: ./abis/greeter-abi.json
+    handler: ./src/EventHandlers.ts
+    events:
+      - event: NewGreeting
+networks:
+  - id: 1
+    start_block: 0
+    hypersync_config:
+      # Use traces to not handle different source block number
+      url: https://1-traces.hypersync.xyz
+    contracts:
+      - name: Greeter # Keep the greeter contract, just to make the block handler work
+        address: 0x9D02A17dE4E68545d3a58D3a20BbBE0399E05c9c
+# Unordered multichain mode allows you to index events from multiple chains
+# in realtime but doesn't guarentee ordering between chains
+# https://docs.envio.dev/docs/HyperIndex/multichain-indexing#unordered-multichain-mode
+unordered_multichain_mode: true
+# Preload optimisation makes your indexer much faster.
+# But be aware that your handlers will run twice,
+# so make sure to use Effect API for external calls.
+preload_handlers: true
