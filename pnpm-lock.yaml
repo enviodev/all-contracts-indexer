@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@envio-dev/hypersync-client':
-        specifier: ^0.6.6
+        specifier: 0.6.6
         version: 0.6.6
       envio:
-        specifier: file:/Users/dzakh/code/envio/hyperindex/codegenerator/target/debug/envio/../../../cli/npm/envio
-        version: file:../../hyperindex/codegenerator/cli/npm/envio(typescript@5.2.2)
+        specifier: 2.29.0
+        version: 2.29.0(typescript@5.2.2)
     optionalDependencies:
       generated:
         specifier: ./generated
@@ -322,8 +322,28 @@ packages:
   end-of-stream@1.4.5:
     resolution: {integrity: sha512-ooEGc6HP26xXq/N+GCGOT0JKCLDGrq2bQUZrQ7gyrJiZANJ/8YDTxTpQBXGMn+WbIQXNVpyWymm7KYVICQnyOg==}
 
-  envio@file:../../hyperindex/codegenerator/cli/npm/envio:
-    resolution: {directory: ../../hyperindex/codegenerator/cli/npm/envio, type: directory}
+  envio-darwin-arm64@2.29.0:
+    resolution: {integrity: sha512-tOWh7+LTspdUu/T30UMPx97n8bL/7Ao+ftkTYK1L1QcQSkipWXX9w3O2ms2dYXQntHmGkgU3rUa7LSNsmD90ag==}
+    cpu: [arm64]
+    os: [darwin]
+
+  envio-darwin-x64@2.29.0:
+    resolution: {integrity: sha512-1lzxnvEUw9Dha6FZazy+fO+HizqOgk2woE0p48lt3VZ+5LwahsV8BgDZPtZxMOi3bCglm+23ZOEn0fsCc1jOiA==}
+    cpu: [x64]
+    os: [darwin]
+
+  envio-linux-arm64@2.29.0:
+    resolution: {integrity: sha512-oF2JZJ2opere6dGYXDgBJT2r082XAT/tAG/PKc+UHfYr1+D3RFUZ6yFk3nTi0U/5DkKlh+Ko6goZH2p7/DU6Ig==}
+    cpu: [arm64]
+    os: [linux]
+
+  envio-linux-x64@2.29.0:
+    resolution: {integrity: sha512-sGjx2CFQH3gL5j9pNkVFJeImC6dMBqonZhRMvXzKB3TUuh/G/RHQLmyHGDfuaz3uhFrRNy8ucu7L3D4wADXQGw==}
+    cpu: [x64]
+    os: [linux]
+
+  envio@2.29.0:
+    resolution: {integrity: sha512-CKOPS5MV87xTchEf2z8lJ7kswd2yRlBjnncb6CURLWYeCKLsngRHOuMdexKLCoR/ZJPwFxFLJErwK84Hnynqew==}
     hasBin: true
 
   escalade@3.2.0:
@@ -1029,7 +1049,19 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-  envio@file:../../hyperindex/codegenerator/cli/npm/envio(typescript@5.2.2):
+  envio-darwin-arm64@2.29.0:
+    optional: true
+
+  envio-darwin-x64@2.29.0:
+    optional: true
+
+  envio-linux-arm64@2.29.0:
+    optional: true
+
+  envio-linux-x64@2.29.0:
+    optional: true
+
+  envio@2.29.0(typescript@5.2.2):
     dependencies:
       '@elastic/ecs-pino-format': 1.4.0
       '@envio-dev/hyperfuel-client': 1.2.2
@@ -1041,6 +1073,11 @@ snapshots:
       rescript: 11.1.3
       rescript-schema: 9.3.0(rescript@11.1.3)
       viem: 2.21.0(typescript@5.2.2)
+    optionalDependencies:
+      envio-darwin-arm64: 2.29.0
+      envio-darwin-x64: 2.29.0
+      envio-linux-arm64: 2.29.0
+      envio-linux-x64: 2.29.0
     transitivePeerDependencies:
       - bufferutil
       - typescript

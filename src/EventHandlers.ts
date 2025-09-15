@@ -14,7 +14,7 @@ Greeter.NewGreeting.handler(async (_) => {
   // Keep it just to make the block handler work
 });
 
-const interval = 100;
+const interval = 200;
 const safeBlock = 23368500;
 const tracesFilter = [{ kind: ["create"] }];
 const fieldSelection = {

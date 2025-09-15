@@ -21,8 +21,8 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@envio-dev/hypersync-client": "^0.6.6",
-    "envio": "file:/Users/dzakh/code/envio/hyperindex/codegenerator/target/debug/envio/../../../cli/npm/envio"
+    "@envio-dev/hypersync-client": "0.6.6",
+    "envio": "2.29.0"
   },
   "optionalDependencies": {
     "generated": "./generated"
