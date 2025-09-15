@@ -1,4 +1,4 @@
 type Contract {
   id: ID! # address
-  startBlock: Int!
+  blockNumber: Int! @index
 }

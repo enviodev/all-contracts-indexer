@@ -1,21 +1,19 @@
 import { Greeter, onBlock } from "generated";
-import { experimental_createEffect, S, OnBlockArgs } from "envio";
+import { experimental_createEffect, S } from "envio";
 import {
   HypersyncClient,
   TraceField,
   TransactionField,
 } from "@envio-dev/hypersync-client";
 
-const client = HypersyncClient.new({
-  url: "https://1-traces.hypersync.xyz",
-});
-
 Greeter.NewGreeting.handler(async (_) => {
   // Keep it just to make the block handler work
 });
 
-const interval = 200;
-const safeBlock = 23368500;
+const client = HypersyncClient.new({
+  url: "https://1-traces.hypersync.xyz",
+});
+
 const tracesFilter = [{ kind: ["create"] }];
 const fieldSelection = {
   transaction: [TransactionField.BlockNumber, TransactionField.ContractAddress],
@@ -32,7 +30,7 @@ const getCreatedContracts = experimental_createEffect(
     output: S.array(
       S.schema({
         id: S.string,
-        startBlock: S.number,
+        blockNumber: S.number,
       })
     ),
   },
@@ -52,7 +50,7 @@ const getCreatedContracts = experimental_createEffect(
         if (!trace.blockNumber) continue;
         result.push({
           id: trace.address,
-          startBlock: trace.blockNumber,
+          blockNumber: trace.blockNumber,
         });
       }
       for (const transaction of data.data.transactions) {
@@ -60,7 +58,7 @@ const getCreatedContracts = experimental_createEffect(
         if (!transaction.blockNumber) continue;
         result.push({
           id: transaction.contractAddress,
-          startBlock: transaction.blockNumber,
+          blockNumber: transaction.blockNumber,
         });
       }
     }
@@ -68,28 +66,30 @@ const getCreatedContracts = experimental_createEffect(
   }
 );
 
-const blockHandler: Parameters<typeof onBlock>[1] = async ({
-  context,
-  block,
-}) => {
-  const contracts = await context.effect(getCreatedContracts, {
-    fromBlock: block.number,
-    toBlock: block.number + interval - 1,
-  });
-  for (const contract of contracts) {
-    context.Contract.set(contract);
-  }
-};
+const interval = 200;
+const safeBlock = 23368500;
+
+const makeBlockHandler =
+  (interval: number): Parameters<typeof onBlock>[1] =>
+  async ({ context, block }) => {
+    const contracts = await context.effect(getCreatedContracts, {
+      fromBlock: block.number,
+      toBlock: block.number + interval - 1,
+    });
+    for (const contract of contracts) {
+      context.Contract.set(contract);
+    }
+  };
 
 onBlock(
   {
     name: "onBlock",
     chain: 1,
     interval,
-    startBlock: 0,
+    startBlock: 1, // Start block 0 doesn't show in the UI in a good way
     endBlock: safeBlock,
   },
-  blockHandler
+  makeBlockHandler(interval)
 );
 onBlock(
   {
@@ -100,5 +100,5 @@ onBlock(
     // processes block forward to the current block
     startBlock: safeBlock + interval,
   },
-  blockHandler
+  makeBlockHandler(1)
 );
