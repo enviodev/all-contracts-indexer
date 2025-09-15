@@ -1,6 +1,10 @@
 import { Greeter, onBlock } from "generated";
-import { experimental_createEffect, S } from "envio";
-import { HypersyncClient, TraceField } from "@envio-dev/hypersync-client";
+import { experimental_createEffect, S, OnBlockArgs } from "envio";
+import {
+  HypersyncClient,
+  TraceField,
+  TransactionField,
+} from "@envio-dev/hypersync-client";
 
 const client = HypersyncClient.new({
   url: "https://1-traces.hypersync.xyz",
@@ -9,6 +13,14 @@ const client = HypersyncClient.new({
 Greeter.NewGreeting.handler(async (_) => {
   // Keep it just to make the block handler work
 });
+
+const interval = 100;
+const safeBlock = 23368500;
+const tracesFilter = [{ kind: ["create"] }];
+const fieldSelection = {
+  transaction: [TransactionField.BlockNumber, TransactionField.ContractAddress],
+  trace: [TraceField.BlockNumber, TraceField.Address],
+};
 
 const getCreatedContracts = experimental_createEffect(
   {
@@ -32,7 +44,7 @@ const getCreatedContracts = experimental_createEffect(
         fromBlock: nextBlock,
         toBlock: input.toBlock,
         traces: tracesFilter,
-        fieldSelection: tracesFieldSelection,
+        fieldSelection: fieldSelection,
       });
       nextBlock = data.nextBlock;
       for (const trace of data.data.traces) {
@@ -43,31 +55,50 @@ const getCreatedContracts = experimental_createEffect(
           startBlock: trace.blockNumber,
         });
       }
+      for (const transaction of data.data.transactions) {
+        if (!transaction.contractAddress) continue;
+        if (!transaction.blockNumber) continue;
+        result.push({
+          id: transaction.contractAddress,
+          startBlock: transaction.blockNumber,
+        });
+      }
     }
     return result;
   }
 );
 
-const interval = 1000;
-const tracesFilter = [{ kind: ["create"] }];
-const tracesFieldSelection = {
-  trace: [TraceField.BlockNumber, TraceField.Address],
+const blockHandler: Parameters<typeof onBlock>[1] = async ({
+  context,
+  block,
+}) => {
+  const contracts = await context.effect(getCreatedContracts, {
+    fromBlock: block.number,
+    toBlock: block.number + interval - 1,
+  });
+  for (const contract of contracts) {
+    context.Contract.set(contract);
+  }
 };
+
 onBlock(
   {
     name: "onBlock",
     chain: 1,
     interval,
     startBlock: 0,
-    endBlock: 20000000,
+    endBlock: safeBlock,
   },
-  async ({ context, block }) => {
-    const contracts = await context.effect(getCreatedContracts, {
-      fromBlock: block.number,
-      toBlock: block.number + interval - 1,
-    });
-    for (const contract of contracts) {
-      context.Contract.set(contract);
-    }
-  }
+  blockHandler
+);
+onBlock(
+  {
+    name: "onBlock",
+    chain: 1,
+    interval: 1,
+    // This + interval is needed, because the historical block handler
+    // processes block forward to the current block
+    startBlock: safeBlock + interval,
+  },
+  blockHandler
 );
