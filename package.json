@@ -1,14 +1,12 @@
 {
   "name": "block-handlers",
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "clean": "tsc --clean",
-    "build": "tsc --build",
-    "watch": "tsc --watch",
-    "mocha": "ts-mocha test/**/*.ts",
     "codegen": "envio codegen",
     "dev": "envio dev",
-    "start": "MAX_BATCH_SIZE=100 envio start",
+    "start": "envio start",
+    "mocha": "tsc --noEmit && NODE_OPTIONS='--no-warnings --import tsx' mocha --exit test/**/*.ts",
     "test": "pnpm mocha"
   },
   "devDependencies": {
@@ -17,17 +15,17 @@
     "@types/node": "20.8.8",
     "chai": "4.3.10",
     "mocha": "10.2.0",
-    "ts-mocha": "^10.0.0",
-    "typescript": "5.2.2"
+    "tsx": "4.21.0",
+    "typescript": "5.9.3"
   },
   "dependencies": {
-    "@envio-dev/hypersync-client": "0.6.6",
-    "envio": "2.29.0"
+    "@envio-dev/hypersync-client": "0.7.2",
+    "envio": "3.0.0-alpha.5"
   },
   "optionalDependencies": {
     "generated": "./generated"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.0.0"
   }
 }

@@ -1,26 +1,25 @@
-import { Greeter, onBlock } from "generated";
-import { experimental_createEffect, S } from "envio";
+import { onBlock } from "generated";
+import { createEffect, S } from "envio";
 import {
   HypersyncClient,
-  TraceField,
-  TransactionField,
+  type FieldSelection,
+  type TraceSelection,
 } from "@envio-dev/hypersync-client";
 
-Greeter.NewGreeting.handler(async (_) => {
-  // Keep it just to make the block handler work
-});
-
-const client = HypersyncClient.new({
+const client = new HypersyncClient({
   url: "https://1-traces.hypersync.xyz",
+  apiToken: process.env.ENVIO_API_TOKEN!,
 });
 
-const tracesFilter = [{ kind: ["create"] }];
+const tracesFilter = [
+  { include: { type: ["create"] } },
+] as const satisfies TraceSelection[];
 const fieldSelection = {
-  transaction: [TransactionField.BlockNumber, TransactionField.ContractAddress],
-  trace: [TraceField.BlockNumber, TraceField.Address],
-};
+  transaction: ["BlockNumber", "ContractAddress"],
+  trace: ["BlockNumber", "Address"],
+} as const satisfies FieldSelection;
 
-const getCreatedContracts = experimental_createEffect(
+const getCreatedContracts = createEffect(
   {
     name: "getCreatedContracts",
     input: S.tuple((ctx) => ({
@@ -33,6 +32,7 @@ const getCreatedContracts = experimental_createEffect(
         blockNumber: S.number,
       })
     ),
+    rateLimit: false,
   },
   async ({ input }) => {
     const result = [];
@@ -67,7 +67,8 @@ const getCreatedContracts = experimental_createEffect(
 );
 
 const interval = 200;
-const safeBlock = 23368500;
+const maxReorgThreshold = 200;
+const safeBlock = (await client.getHeight()) - maxReorgThreshold;
 
 const makeBlockHandler =
   (interval: number): Parameters<typeof onBlock>[1] =>
