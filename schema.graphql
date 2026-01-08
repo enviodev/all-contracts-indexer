@@ -1,4 +1,5 @@
 type Contract {
   id: ID! # address
   blockNumber: Int! @index
+  blockTime: Timestamp! @index
 }

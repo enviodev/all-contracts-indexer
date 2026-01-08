@@ -13,3 +13,8 @@ chains:
     hypersync_config:
       # Use traces to not handle different source block number
       url: https://1-traces.hypersync.xyz
+  - id: 100
+    start_block: 0
+    hypersync_config:
+      # Use traces to not handle different source block number
+      url: https://100-traces.hypersync.xyz
