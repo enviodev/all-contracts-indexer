@@ -2,8 +2,10 @@ import { onBlock, type ChainId, indexer } from "generated";
 import { createEffect, S } from "envio";
 import {
   HypersyncClient,
+  JoinMode,
   type FieldSelection,
   type TraceSelection,
+  type TransactionSelection,
 } from "@envio-dev/hypersync-client";
 
 const initChain = async (chainId: ChainId) => {
@@ -121,6 +123,13 @@ const initChain = async (chainId: ChainId) => {
   const tracesFilter = [
     { include: { type: ["create"] } },
   ] as const satisfies TraceSelection[];
+  // contractAddress as not null (any address)
+  // OR if "to" is null, but we can't filter on it.
+  const transactionsFilter = [
+    {
+      include: {},
+    },
+  ] as const satisfies TransactionSelection[];
   const fieldSelection = {
     transaction: ["BlockNumber", "ContractAddress"],
     trace: ["BlockNumber", "Address"],
@@ -148,7 +157,9 @@ const initChain = async (chainId: ChainId) => {
           fromBlock: nextBlock,
           toBlock: input.toBlock,
           traces: tracesFilter,
+          transactions: transactionsFilter,
           fieldSelection: fieldSelection,
+          joinMode: JoinMode.JoinNothing,
         });
         nextBlock = data.nextBlock;
         for (const trace of data.data.traces) {
