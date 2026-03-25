@@ -2,19 +2,20 @@
 
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-7289da?logo=discord&logoColor=white)](https://discord.com/invite/envio)
 
-An [Envio HyperIndex](https://docs.envio.dev/docs/HyperIndex/overview) indexer that tracks every contract deployment on Ethereum Mainnet and Gnosis Chain. Built as a reference example of indexing factory and deployment patterns at scale.
+An [Envio HyperIndex](https://docs.envio.dev/docs/HyperIndex/overview) indexer that tracks every contract deployment on Ethereum Mainnet and Gnosis Chain. Uses HyperSync's traces endpoint to detect contract creations across both chains.
 
 ## What This Indexes
 
-- All contracts created via `ContractCreated` events on Ethereum Mainnet and Gnosis Chain
+- All contracts created on Ethereum Mainnet (chain ID 1) and Gnosis Chain (chain ID 100)
 - Contract address, deployer, deployment transaction, and block data
+- Data sourced from execution traces via HyperSync's dedicated traces endpoints
 
 ## Use Cases
 
 - Track all contract deployments across a chain
 - Analyze deployment patterns and trends
 - Build a contract registry or explorer
-- Reference implementation for indexing at high volume
+- Reference implementation for trace-based indexing at scale
 
 ## Prerequisites
 
@@ -43,7 +44,7 @@ pnpm codegen
 ## Built With
 
 - [Envio HyperIndex](https://docs.envio.dev/docs/HyperIndex/overview) - multichain indexing framework
-- [HyperSync](https://docs.envio.dev/docs/HyperSync/overview) - high-performance blockchain data retrieval
+- [HyperSync](https://docs.envio.dev/docs/HyperSync/overview) - high-performance blockchain data retrieval (traces endpoint)
 
 ## Documentation
 
