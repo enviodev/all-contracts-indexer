@@ -4,18 +4,11 @@
 
 An [Envio HyperIndex](https://docs.envio.dev/docs/HyperIndex/overview) indexer that tracks every contract deployment on Ethereum Mainnet and Gnosis Chain. Uses HyperSync's traces endpoint to detect contract creations across both chains.
 
-## What This Indexes
+## What's Indexed
 
-- All contracts created on Ethereum Mainnet (chain ID 1) and Gnosis Chain (chain ID 100)
-- Contract address, deployer, deployment transaction, and block data
-- Data sourced from execution traces via HyperSync's dedicated traces endpoints
+The GraphQL API exposes every contract deployment including contract address, deployer address, deployment transaction, and block data across Ethereum Mainnet (chain ID 1) and Gnosis Chain (chain ID 100). Data is sourced from execution traces via HyperSync's dedicated traces endpoint.
 
-## Use Cases
-
-- Track all contract deployments across a chain
-- Analyze deployment patterns and trends
-- Build a contract registry or explorer
-- Reference implementation for trace-based indexing at scale
+This is a useful reference implementation for trace-based indexing at scale, and a starting point for building contract registries, deployment analytics tools, or chain explorers.
 
 ## Prerequisites
 
@@ -50,7 +43,7 @@ pnpm codegen
 
 - [HyperIndex Docs](https://docs.envio.dev/docs/HyperIndex/overview)
 - [Getting Started with HyperIndex](https://docs.envio.dev/docs/HyperIndex/getting-started)
-- [Envio Explorer](https://envio.dev/explorer) - more example indexers
+- [More Example Indexers](https://envio.dev/explorer)
 
 ## Support
 
