@@ -1,5 +1,6 @@
-import { onBlock, type ChainId, indexer } from "generated";
-import { createEffect, S } from "envio";
+import { indexer, createEffect, S } from "envio";
+
+type ChainId = (typeof indexer.chainIds)[number];
 import {
   HypersyncClient,
   JoinMode,
@@ -188,14 +189,14 @@ const initChain = async (chainId: ChainId) => {
   const safeBlock = (await client.getHeight()) - maxReorgThreshold;
 
   const makeBlockHandler =
-    (interval: number): Parameters<typeof onBlock>[1] =>
-    async ({ context, block }) => {
+    (interval: number) =>
+    async ({ context, block }: { context: any; block: { number: number } }) => {
       const contracts = await context.effect(getCreatedContracts, {
         fromBlock: block.number,
         toBlock: block.number + interval - 1,
       });
       await Promise.all(
-        contracts.map(async (contract) => {
+        contracts.map(async (contract: { blockNumber: number }) => {
           const timestamp = await context.effect(
             getBlockTimestamp,
             contract.blockNumber
@@ -208,24 +209,29 @@ const initChain = async (chainId: ChainId) => {
       );
     };
 
-  onBlock(
+  // V3: onBlock runs on every chain by default — scope with `where`.
+  indexer.onBlock(
     {
-      name: `onBlock`,
-      chain: chainId,
-      interval,
-      startBlock: 1, // Start block 0 doesn't show in the UI in a good way
-      endBlock: safeBlock,
+      name: `onBlock-${chainId}-historical`,
+      where: ({ chain }) => {
+        if (chain.id !== chainId) return false;
+        return {
+          block: { number: { _gte: 1, _lte: safeBlock, _every: interval } },
+        };
+      },
     },
     makeBlockHandler(interval)
   );
-  onBlock(
+  indexer.onBlock(
     {
-      name: `onBlock`,
-      chain: chainId,
-      interval: 1,
-      // This + interval is needed, because the historical block handler
-      // processes block forward to the current block
-      startBlock: safeBlock + interval,
+      name: `onBlock-${chainId}-realtime`,
+      where: ({ chain }) => {
+        if (chain.id !== chainId) return false;
+        // Historical block handler processes forward to the current block
+        return {
+          block: { number: { _gte: safeBlock + interval, _every: 1 } },
+        };
+      },
     },
     makeBlockHandler(1)
   );

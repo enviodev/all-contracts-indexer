@@ -20,10 +20,7 @@
   },
   "dependencies": {
     "@envio-dev/hypersync-client": "0.7.2",
-    "envio": "3.0.0-alpha.5"
-  },
-  "optionalDependencies": {
-    "generated": "./generated"
+    "envio": "3.2.1"
   },
   "engines": {
     "node": ">=22.0.0"
